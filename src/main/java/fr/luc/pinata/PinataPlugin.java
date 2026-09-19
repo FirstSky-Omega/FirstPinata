@@ -59,7 +59,6 @@ public class PinataPlugin extends JavaPlugin {
         this.mythicIntegration = new MythicMobsIntegration(this);
         this.nexoIntegration = new NexoIntegration(this);
         this.modelEngineIntegration = new ModelEngineIntegration(this);
-        this.papiIntegration = new PapiIntegration(this);
 
         // 3) Managers de contenu
         this.messageConfig = new MessageConfig(this);
@@ -69,6 +68,9 @@ public class PinataPlugin extends JavaPlugin {
         this.pinataManager = new PinataManager(this);
         this.scheduleManager = new ScheduleManager(this);
         this.winsManager = new WinsManager(this);
+
+        // PAPI après winsManager pour que onRequest puisse y accéder
+        this.papiIntegration = new PapiIntegration(this);
 
         reloadAll();
 
