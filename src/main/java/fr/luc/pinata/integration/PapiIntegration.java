@@ -41,17 +41,24 @@ public class PapiIntegration {
     public PapiIntegration(PinataPlugin plugin) {
         this.plugin = plugin;
         Plugin p = Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
-        this.present = p != null && p.isEnabled() && plugin.config().placeholderApiEnabled();
+        this.present = p != null && plugin.config().placeholderApiEnabled();
         if (present) {
             plugin.getLogger().info("PlaceholderAPI détecté : intégration activée.");
             if (plugin.config().placeholderApiRegisterExpansion()) {
-                try {
-                    expansion = new PinataExpansion();
-                    expansion.register();
-                    plugin.getLogger().info("Expansion 'pinata' enregistrée.");
-                } catch (Throwable t) {
-                    plugin.getLogger().warning("Enregistrement expansion PAPI : " + t.getMessage());
-                }
+                // Reporter d'1 tick pour s'assurer que PAPI est pleinement initialisé
+                plugin.scheduler().globalDelayed(() -> {
+                    try {
+                        expansion = new PinataExpansion();
+                        boolean ok = expansion.register();
+                        if (ok) {
+                            plugin.getLogger().info("Expansion 'firstpinata' enregistrée avec succès.");
+                        } else {
+                            plugin.getLogger().warning("Expansion 'firstpinata' : register() a retourné false.");
+                        }
+                    } catch (Throwable t) {
+                        plugin.getLogger().warning("Enregistrement expansion PAPI échoué : " + t.getMessage());
+                    }
+                }, 1L);
             }
         }
     }
