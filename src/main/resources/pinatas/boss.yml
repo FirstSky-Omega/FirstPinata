@@ -1,0 +1,112 @@
+# Piñata "boss" utilisant un MythicMob comme base.
+display-name: "<gradient:#FF4E00:#FFB347><bold>Boss Piñata</bold></gradient>"
+
+mob:
+  type: mythic
+  mythic-id: SkeletalKing      # doit exister dans MythicMobs
+  level: 1
+  glowing: false
+  invulnerable-to-non-players: true
+  ai: true                     # on garde l'IA du mythic pour ce boss
+
+mythicmobs:
+  keep-skills: true            # on garde les skills natifs
+  extra-skills:
+    - trigger: onSpawn
+      skill: BossIntroCinematic
+      chance: 1.0
+    - trigger: onDeath
+      skill: BossExplosion
+      chance: 1.0
+
+stats:
+  max-health: 5000
+  boss-bar:
+    enabled: true
+    title: "<red><bold><pinata></bold> <dark_gray>|</dark_gray> <red><hp>/<max_hp>"
+    color: RED
+    style: SEGMENTED_10
+    flags: [ DARKEN_SCREEN, CREATE_FOG ]
+    radius: 100
+
+lifetime:
+  max-seconds: 900
+  idle-seconds: 180
+
+effects:
+  spawn:
+    sound: "ENTITY_ENDER_DRAGON_GROWL"
+    volume: 2.0
+    pitch: 0.8
+    particle: "SOUL_FIRE_FLAME"
+    particle-count: 100
+    broadcast: "<red><bold>⚔ <pinata></bold></red> <gray>vient d'apparaître en <white><world></white> !"
+    broadcast-radius: 0
+  hit:
+    sound: "ENTITY_IRON_GOLEM_HURT"
+    volume: 0.5
+    pitch: 1.0
+    particle: "CRIT_MAGIC"
+    particle-count: 12
+  death:
+    sound: "ENTITY_WITHER_DEATH"
+    volume: 2.0
+    pitch: 1.0
+    particles:
+      - { type: EXPLOSION_HUGE, count: 5 }
+      - { type: FIREWORK, count: 200 }
+    broadcast: "<gradient:#FF4E00:#FFB347><bold><pinata></bold></gradient> <gray>vaincu par <gold><top></gold> avec <yellow><participants></yellow> combattants !"
+
+damage:
+  multiplier: 1.0
+  per-hit-cap: 250
+  blocked-causes: [ VOID, FIRE_TICK, SUFFOCATION ]
+
+rewards:
+  hit:
+    chance-per-hit: 0.05
+    entries:
+      - name: "Émeraude"
+        weight: 70
+        actions:
+          - "give: minecraft:emerald 1"
+      - name: "Or"
+        weight: 25
+        actions:
+          - "give: minecraft:gold_ingot 3"
+      - name: "Diamant"
+        weight: 5
+        actions:
+          - "give: minecraft:diamond 1"
+          - "sound: ENTITY_PLAYER_LEVELUP,1.0,1.5"
+
+  tiers:
+    - name: "MVP"
+      min-rank: 1
+      max-rank: 1
+      min-damage: 100
+      actions:
+        - "console: eco give <player> 5000"
+        - "console: give <player> netherite_ingot 2"
+        - "title: <#FFD86E><bold>MVP</bold>;<gray>+5000 pièces & 2 lingots de nétherite;20;80;20"
+        - "sound: UI_TOAST_CHALLENGE_COMPLETE,1.0,1.0"
+        - "broadcast: <gold><bold><player></bold> <gray>a fini <#FFD86E>MVP</#FFD86E> sur <pinata> !"
+    - name: "Top 3"
+      min-rank: 2
+      max-rank: 3
+      min-damage: 50
+      actions:
+        - "console: eco give <player> 2000"
+        - "give: minecraft:diamond 5"
+    - name: "Top 10"
+      min-rank: 4
+      max-rank: 10
+      min-damage: 20
+      actions:
+        - "console: eco give <player> 500"
+
+  participation:
+    min-damage: 10
+    actions:
+      - "console: eco give <player> 50"
+      - "message: <gray>Merci d'avoir affronté <pinata> !"

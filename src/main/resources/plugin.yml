@@ -1,0 +1,45 @@
+name: FirstPinata
+version: '${project.version}'
+main: fr.luc.pinata.PinataPlugin
+api-version: '1.26'
+folia-supported: true
+authors: [ lucfkann ]
+description: Piñata plugin with full MythicMobs, Nexo, MEG, PAPI & Folia support
+softdepend:
+  - MythicMobs
+  - Nexo
+  - ModelEngine
+  - PlaceholderAPI
+
+commands:
+  pinata:
+    description: Main Pinata command
+    aliases: [ pin, pt ]
+    usage: /<command> help
+
+permissions:
+  pinata.admin:
+    description: Grants access to all Pinata admin features
+    default: op
+    children:
+      pinata.command.help: true
+      pinata.command.reload: true
+      pinata.command.spawn: true
+      pinata.command.stop: true
+      pinata.command.list: true
+      pinata.command.zone: true
+      pinata.command.info: true
+  pinata.command.help:
+    default: true
+  pinata.command.reload:
+    default: op
+  pinata.command.spawn:
+    default: op
+  pinata.command.stop:
+    default: op
+  pinata.command.list:
+    default: op
+  pinata.command.zone:
+    default: op
+  pinata.command.info:
+    default: op

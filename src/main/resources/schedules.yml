@@ -1,0 +1,40 @@
+# =====================================================================
+#                       PINATA - Schedules
+# ---------------------------------------------------------------------
+#  Spawn automatique de piñatas selon planning.
+#
+#  Chaque entrée définit :
+#    pinata          : id du type de piñata (dans pinatas/*.yml)
+#    zone            : nom de la zone (voir zones.yml)
+#    mode            : interval | cron | fixed-times
+#    interval        : (mode interval) durée entre deux spawns (ex 30m, 2h)
+#    times           : (mode fixed-times) liste d'heures (HH:mm)
+#    cron            : (mode cron) expression cron 5-fields
+#    requirements    :
+#      min-players-online : nombre min. de joueurs sur le serveur
+#      worlds             : liste blanche des mondes autorisés
+#      max-active         : nb max de piñatas de ce type simultanément
+#    announce        : (optionnel) broadcast avant spawn
+#      enabled: true
+#      countdown-seconds: [ 60, 30, 10, 5, 3, 2, 1 ]
+#      message: "<yellow>Un piñata apparaîtra dans <white><time></white> !"
+# =====================================================================
+
+schedules: {}
+#  hourly-arena:
+#    pinata: default
+#    zone: arena
+#    mode: interval
+#    interval: 1h
+#    requirements:
+#      min-players-online: 3
+#    announce:
+#      enabled: true
+#      countdown-seconds: [ 60, 10, 5, 3, 2, 1 ]
+#      message: "<yellow>Piñata <white><pinata></white> dans <white><time></white> !"
+#
+#  daily-boss:
+#    pinata: boss
+#    zone: spawn-hub
+#    mode: fixed-times
+#    times: [ "12:00", "18:00", "21:30" ]

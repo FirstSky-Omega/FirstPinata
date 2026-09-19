@@ -1,0 +1,40 @@
+# =====================================================================
+#                          PINATA - Zones
+# ---------------------------------------------------------------------
+#  Zones utilisables pour /pinata spawn <type> zone:<nom>
+#  et pour les spawns automatiques (voir schedules.yml).
+#
+#  types :
+#    - box       : boîte rectangulaire, spawn dans un point aléatoire
+#    - points    : liste de points fixes, un est choisi aléatoirement
+#    - single    : point unique
+#
+#  requirements :
+#    - min-players     : nombre minimal de joueurs dans le monde
+#    - required-region : (WorldGuard, optionnel) nom de région
+# =====================================================================
+
+zones: {}
+#  arena:
+#    world: world
+#    type: box
+#    min: { x: 100, y: 65, z: 100 }
+#    max: { x: 150, y: 80, z: 150 }
+#    safe-spawn: true      # évite blocs solides / lave
+#    requirements:
+#      min-players: 2
+#
+#  spawn-hub:
+#    world: world
+#    type: single
+#    x: 0.5
+#    y: 65
+#    z: 0.5
+#
+#  events:
+#    world: event_world
+#    type: points
+#    points:
+#      - { x: 10, y: 70, z: 10 }
+#      - { x: 20, y: 70, z: 30 }
+#      - { x: 40, y: 72, z: 10 }

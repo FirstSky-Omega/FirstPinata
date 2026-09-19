@@ -1,0 +1,104 @@
+# =====================================================================
+#                   PINATA - Messages (FR)
+# ---------------------------------------------------------------------
+#  Format : MiniMessage (https://docs.advntr.dev/minimessage/format.html)
+#  Placeholders disponibles selon le contexte :
+#    <player>        Nom du joueur
+#    <pinata>        Nom du piñata (display-name)
+#    <pinata_id>     Identifiant technique du piñata
+#    <damage>        Dégâts infligés (nombre)
+#    <total_damage>  Dégâts totaux cumulés
+#    <hp>            HP restants
+#    <max_hp>        HP max
+#    <top>           Nom du top damager
+#    <tier>          Nom du tier
+#    <world>         Monde
+#    <x> <y> <z>     Coordonnées
+# =====================================================================
+
+# --- Erreurs génériques -------------------------------------------------
+no-permission: "<red>Tu n'as pas la permission d'utiliser cette commande."
+unknown-subcommand: "<red>Sous-commande inconnue. <gray>Utilise <white>/pinata help</white> pour la liste."
+player-only: "<red>Cette commande doit être exécutée par un joueur."
+console-only: "<red>Cette commande doit être exécutée par la console."
+usage: "<yellow>Usage : <white><usage>"
+
+# --- Reload -------------------------------------------------------------
+reload-start: "<gray>Rechargement de la configuration…"
+reload-success: "<green>Configuration rechargée avec succès <dark_gray>(<pinatas> piñatas, <zones> zones)"
+reload-error: "<red>Erreur lors du rechargement : <white><error>"
+
+# --- Spawn --------------------------------------------------------------
+spawn-success: "<green>Piñata <white><pinata></white> apparu en <white><world> <x> <y> <z>"
+spawn-fail-unknown: "<red>Piñata inconnu : <white><id>"
+spawn-fail-limit: "<red>Nombre maximum de piñatas simultanés atteint (<white><max></white>)."
+spawn-fail-location: "<red>Impossible de spawn ici : <white><reason>"
+
+# --- Stop ---------------------------------------------------------------
+stop-success: "<yellow>Piñata <white><pinata></white> retiré."
+stop-all-success: "<yellow>Tous les piñatas actifs ont été retirés (<white><count></white>)."
+stop-none: "<gray>Aucun piñata actif à retirer."
+
+# --- Info / list --------------------------------------------------------
+list-empty: "<gray>Aucun piñata actif."
+list-header: "<gradient:#FF6EC7:#FFD86E><bold>Piñatas actifs</bold></gradient> <dark_gray>(<count>)"
+list-entry: " <dark_gray>▸ <white><pinata> <gray>» <white><world> <yellow><x> <y> <z> <dark_gray>| <red><hp>/<max_hp> HP"
+
+# --- Combat -------------------------------------------------------------
+hit-personal: "<gray>+<white><damage></white> dégâts sur <pinata> <dark_gray>(<red><hp>/<max_hp><dark_gray>)"
+death-broadcast: "<gradient:#FF6EC7:#FFD86E><bold>Piñata</bold></gradient> <dark_gray>»</dark_gray> <white><pinata></white> <gray>a été brisé par <gold><top></gold> <dark_gray>!"
+death-no-top: "<gradient:#FF6EC7:#FFD86E><bold>Piñata</bold></gradient> <dark_gray>»</dark_gray> <white><pinata></white> <gray>a été détruit."
+
+# --- Rewards ------------------------------------------------------------
+reward-hit: "<green>+ <white><reward></white>"
+reward-tier: "<green>Tu es <white><tier></white> avec <red><total_damage></red> dégâts et remportes des récompenses !"
+reward-tier-broadcast: "<gray><top></gray> <gray>termine <white><tier></white> sur <pinata> <dark_gray>(<red><total_damage><dark_gray>)"
+
+# --- Zones --------------------------------------------------------------
+zone-created: "<green>Zone <white><zone></white> créée."
+zone-removed: "<yellow>Zone <white><zone></white> supprimée."
+zone-not-found: "<red>Zone introuvable : <white><zone>"
+zone-list-header: "<gradient:#FF6EC7:#FFD86E><bold>Zones</bold></gradient> <dark_gray>(<count>)"
+zone-list-entry: " <dark_gray>▸ <white><zone> <gray>» <white><world> <yellow><x1> <y1> <z1> <gray>→ <yellow><x2> <y2> <z2>"
+
+# --- Help ---------------------------------------------------------------
+help-header:
+  - ""
+  - "<gradient:#FF6EC7:#FFD86E><bold>                 FirstPiñata                 </bold></gradient>"
+  - "<dark_gray>              <gray><italic>Version <version> • par lucfkann</italic>"
+  - ""
+help-entry: " <dark_gray>▸ <#FFD86E><cmd> <gray><args> <dark_gray>— <gray><desc>"
+help-footer:
+  - ""
+  - "<dark_gray>  <strikethrough>                                                    "
+  - ""
+
+help-commands:
+  - cmd: "/pinata help"
+    args: ""
+    desc: "Affiche cette aide"
+    permission: "pinata.command.help"
+  - cmd: "/pinata spawn"
+    args: "<type> [world x y z]"
+    desc: "Fait apparaître un piñata"
+    permission: "pinata.command.spawn"
+  - cmd: "/pinata list"
+    args: ""
+    desc: "Liste les piñatas actifs"
+    permission: "pinata.command.list"
+  - cmd: "/pinata stop"
+    args: "[all|<id>]"
+    desc: "Retire un ou tous les piñatas"
+    permission: "pinata.command.stop"
+  - cmd: "/pinata reload"
+    args: ""
+    desc: "Recharge la configuration"
+    permission: "pinata.command.reload"
+  - cmd: "/pinata info"
+    args: "<type>"
+    desc: "Détaille un type de piñata"
+    permission: "pinata.command.info"
+  - cmd: "/pinata zone"
+    args: "<create|remove|list> …"
+    desc: "Gère les zones de spawn"
+    permission: "pinata.command.zone"
