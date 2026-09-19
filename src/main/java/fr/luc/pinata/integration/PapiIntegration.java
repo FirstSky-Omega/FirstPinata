@@ -93,7 +93,7 @@ public class PapiIntegration {
 
     private class PinataExpansion extends PlaceholderExpansion {
 
-        @Override public @NotNull String getIdentifier() { return "pinata"; }
+        @Override public @NotNull String getIdentifier() { return "firstpinata"; }
         @Override public @NotNull String getAuthor() { return "lucfkann"; }
         @Override public @NotNull String getVersion() { return plugin.getPluginMeta().getVersion(); }
         @Override public boolean persist() { return true; }
