@@ -22,12 +22,15 @@ import java.util.UUID;
  *  - Enregistre une expansion "pinata" pour exposer nos propres stats.
  *
  * Placeholders exposés :
- *   %pinata_active%              nombre de piñatas actifs
- *   %pinata_types_loaded%        nombre de types configurés
- *   %pinata_top_name_<type>%     nom du top damager pour un type actif
- *   %pinata_top_damage_<type>%   dégâts du top damager
- *   %pinata_player_hits_<type>%  dégâts totaux du joueur sur ce type actif
- *   %pinata_player_top_rank%     meilleur rang actuel du joueur sur un piñata actif
+ *   %pinata_active%                nombre de piñatas actifs
+ *   %pinata_types_loaded%          nombre de types configurés
+ *   %pinata_top_name_<type>%       nom du top damager pour un type actif
+ *   %pinata_top_damage_<type>%     dégâts du top damager
+ *   %pinata_player_hits_<type>%    dégâts totaux du joueur sur ce type actif
+ *   %pinata_player_top_rank%       meilleur rang actuel du joueur sur un piñata actif
+ *   %pinata_top_kills_name_N%      Nème joueur du classement persistant de victoires
+ *   %pinata_top_kills_count_N%     nombre de victoires du Nème joueur
+ *   %pinata_next_time%             temps formaté avant le prochain spawn schedulé
  */
 public class PapiIntegration {
 
@@ -133,7 +136,33 @@ public class PapiIntegration {
                 }
                 return best == Integer.MAX_VALUE ? "-" : String.valueOf(best);
             }
+            if (p.startsWith("top_kills_name_")) {
+                try {
+                    int rank = Integer.parseInt(p.substring("top_kills_name_".length()));
+                    return plugin.winsManager().getTopName(rank);
+                } catch (NumberFormatException ignored) { return null; }
+            }
+            if (p.startsWith("top_kills_count_")) {
+                try {
+                    int rank = Integer.parseInt(p.substring("top_kills_count_".length()));
+                    return String.valueOf(plugin.winsManager().getTopWins(rank));
+                } catch (NumberFormatException ignored) { return null; }
+            }
+            if (p.equals("next_time")) {
+                long nextMs = plugin.scheduleManager().getNextMs();
+                if (nextMs < 0) return "-";
+                long secs = (nextMs - System.currentTimeMillis()) / 1000L;
+                if (secs <= 0) return "En cours";
+                return formatSeconds(secs);
+            }
             return null;
+        }
+
+        private static String formatSeconds(long s) {
+            if (s < 60) return s + "s";
+            if (s < 3600) return (s / 60) + "min" + (s % 60 == 0 ? "" : " " + (s % 60) + "s");
+            long h = s / 3600, m = (s % 3600) / 60;
+            return h + "h" + (m == 0 ? "" : " " + m + "min");
         }
 
         private PinataInstance findActive(String typeId) {

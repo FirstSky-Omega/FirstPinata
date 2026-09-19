@@ -14,6 +14,7 @@ import fr.luc.pinata.listener.MythicListener;
 import fr.luc.pinata.pinata.PinataManager;
 import fr.luc.pinata.reward.RewardManager;
 import fr.luc.pinata.schedule.ScheduleManager;
+import fr.luc.pinata.stats.WinsManager;
 import fr.luc.pinata.scheduler.SchedulerAdapter;
 import fr.luc.pinata.zone.ZoneManager;
 import org.bukkit.Bukkit;
@@ -32,6 +33,7 @@ public class PinataPlugin extends JavaPlugin {
     private ScheduleManager scheduleManager;
     private PinataManager pinataManager;
     private RewardManager rewardManager;
+    private WinsManager winsManager;
 
     private MythicMobsIntegration mythicIntegration;
     private NexoIntegration nexoIntegration;
@@ -66,6 +68,7 @@ public class PinataPlugin extends JavaPlugin {
         this.rewardManager = new RewardManager(this);
         this.pinataManager = new PinataManager(this);
         this.scheduleManager = new ScheduleManager(this);
+        this.winsManager = new WinsManager(this);
 
         reloadAll();
 
@@ -104,6 +107,7 @@ public class PinataPlugin extends JavaPlugin {
         zoneManager.reload();
         rewardManager.reload();
         scheduleManager.reload();
+        winsManager.load();
     }
 
     // ----- Accessors -----
@@ -116,6 +120,7 @@ public class PinataPlugin extends JavaPlugin {
     public ScheduleManager scheduleManager() { return scheduleManager; }
     public PinataManager pinataManager() { return pinataManager; }
     public RewardManager rewardManager() { return rewardManager; }
+    public WinsManager winsManager() { return winsManager; }
 
     public MythicMobsIntegration mythic() { return mythicIntegration; }
     public NexoIntegration nexo() { return nexoIntegration; }

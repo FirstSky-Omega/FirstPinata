@@ -44,6 +44,9 @@ public class DeathListener implements Listener {
                 .set("top", topName)
                 .build());
 
+        // Victoire persistante
+        if (top != null) plugin.winsManager().increment(top);
+
         // Extra Mythic onDeath
         if (plugin.mythic().isPresent()
                 && instance.type().mob().source() == PinataType.MobSource.MYTHIC) {

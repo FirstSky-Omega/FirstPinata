@@ -224,6 +224,30 @@ public class ScheduleManager {
 
     public Collection<Entry> entries() { return entries; }
 
+    /** Retourne le timestamp ms du prochain spawn schedulé, ou -1 si aucun. */
+    public long getNextMs() {
+        long now = System.currentTimeMillis();
+        long best = Long.MAX_VALUE;
+        for (Entry e : entries) {
+            if (e.mode == Entry.Mode.INTERVAL && e.nextFireMs > now) {
+                best = Math.min(best, e.nextFireMs);
+            } else if (e.mode == Entry.Mode.FIXED_TIMES) {
+                LocalTime cur = LocalTime.now(plugin.config().timezone());
+                for (LocalTime t : e.times) {
+                    long secUntil = secondsUntil(cur, t);
+                    best = Math.min(best, now + secUntil * 1000L);
+                }
+            }
+        }
+        return best == Long.MAX_VALUE ? -1L : best;
+    }
+
+    private static long secondsUntil(LocalTime now, LocalTime target) {
+        long diff = (long) target.toSecondOfDay() - now.toSecondOfDay();
+        if (diff <= 0) diff += 86400L;
+        return diff;
+    }
+
     // -------------------------------------------------------------------
 
     private static long parseDuration(String s) {
