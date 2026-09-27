@@ -1,0 +1,210 @@
+# =====================================================================
+#            PINATA - Template exhaustif : example.yml
+# ---------------------------------------------------------------------
+#  Renomme le fichier ou ajoutes-en autant que tu veux dans ce dossier
+#  (par exemple "default.yml", "boss.yml", ...). Le nom de fichier (sans
+#  l'extension) devient l'ID technique du piñata utilisé dans
+#  /pinata spawn <id>.
+# =====================================================================
+
+# Nom affiché (MiniMessage) au dessus du mob et dans les broadcasts.
+display-name: "<gradient:#FF6EC7:#FFD86E><bold>Piñata Sucrée</bold></gradient>"
+
+# --- Mob de base -------------------------------------------------------
+# Trois sources possibles pour le mob :
+#   type: vanilla   -> entity avec un EntityType Bukkit
+#   type: mythic    -> mob MythicMobs
+#   type: modelengine (à venir)
+mob:
+  type: vanilla        # vanilla | mythic
+  # Pour vanilla :
+  entity: PIG
+  # Pour mythic :
+  #   mythic-id: SkeletalKing
+  #   level: 1
+
+  # Optionnels appliqués après spawn :
+  glowing: true
+  gravity: true
+  invulnerable-to-non-players: true    # bloque explosions, projectiles etc
+  ai: false                            # désactive le pathfinding (piñata statique)
+  silent: false
+  no-damage-ticks: 0                   # (0 = utiliser la valeur vanilla)
+
+  # --- ModelEngine (optionnel) --------------------------------------
+  # Si ModelEngine est installé et 'model.id' est renseigné, un model 3D
+  # est attaché à l'entité. Le mob de base peut être masqué (voir
+  # config.yml -> modelengine.hide-base-mob).
+  #
+  # model:
+  #   id: pinata_candy    # nom du .bbmodel importé dans MEG
+  #   scale: 1.0
+  #   lock-yaw: false
+  #   nametag: nametag    # nom du bone nametag (optionnel)
+
+# --- MythicMobs behavior override --------------------------------------
+mythicmobs:
+  # override le default global config.yml -> mythicmobs.keep-skills-by-default
+  keep-skills: true
+  # Skills additionnels déclenchés par ce piñata (utilise MythicMobs API).
+  # Chaque skill est appelé au trigger indiqué.
+  extra-skills:
+    - trigger: onDamaged     # onSpawn | onDamaged | onDeath | onTick(<ticks>)
+      skill: PinataConfetti  # nom du skill mythic
+      chance: 0.10           # 10% par trigger
+
+# --- Stats -------------------------------------------------------------
+stats:
+  max-health: 500
+  # Si true, la barre de vie est répartie visuellement sur une bossbar globale.
+  boss-bar:
+    enabled: true
+    title: "<gradient:#FF6EC7:#FFD86E><pinata></gradient> <dark_gray>|</dark_gray> <red><hp>/<max_hp>"
+    color: PINK               # PINK / BLUE / RED / GREEN / YELLOW / PURPLE / WHITE
+    style: SEGMENTED_10       # PROGRESS | NOTCHED_6 | NOTCHED_10 | NOTCHED_12 | NOTCHED_20 | SEGMENTED_10 alias
+    flags: [ CREATE_FOG ]     # DARKEN_SCREEN | PLAY_BOSS_MUSIC | CREATE_FOG
+    radius: 60                # joueurs à moins de X blocs voient la bar
+
+# --- Durée / despawn ---------------------------------------------------
+lifetime:
+  # Durée max avant despawn forcé (secondes). 0 = infini.
+  max-seconds: 300
+  # Si aucune interaction pendant X secondes -> despawn. 0 = jamais.
+  idle-seconds: 60
+  # Message diffusé aux participants quand le piñata despawn sans être tué.
+  timeout-broadcast: "<gray>Le piñata <white><pinata></white> s'est enfui…"
+
+# --- Effets et sons ----------------------------------------------------
+effects:
+  spawn:
+    sound: "ENTITY_FIREWORK_ROCKET_LAUNCH"
+    volume: 1.0
+    pitch: 1.2
+    particle: "FIREWORK"
+    particle-count: 40
+    broadcast: "<gradient:#FF6EC7:#FFD86E><bold>Piñata</bold></gradient> <dark_gray>»</dark_gray> <white><pinata></white> <gray>apparaît en <white><world></white> <yellow><x> <y> <z></yellow> !"
+    broadcast-radius: 0       # 0 = tous les joueurs
+  hit:
+    sound: "BLOCK_WOOL_HIT"
+    volume: 0.8
+    pitch: 1.5
+    particle: "CRIT"
+    particle-count: 8
+  death:
+    sound: "ENTITY_FIREWORK_ROCKET_LARGE_BLAST"
+    volume: 1.2
+    pitch: 1.0
+    particles:
+      - { type: FIREWORK, count: 100 }
+      - { type: HEART, count: 30 }
+    broadcast: "<gradient:#FF6EC7:#FFD86E><bold>Piñata</bold></gradient> <dark_gray>»</dark_gray> <white><pinata></white> <gray>brisé par <gold><top></gold> ! Il y avait <yellow><participants></yellow> participants."
+
+# --- Damage cap / anti-cheese -----------------------------------------
+damage:
+  # Multiplicateur global appliqué à tous les dégâts entrants.
+  multiplier: 1.0
+  # Dégâts max qu'un même joueur peut infliger en un hit. 0 = pas de cap.
+  per-hit-cap: 0
+  # Dégâts max qu'un joueur peut cumuler par piñata. 0 = pas de cap.
+  per-player-cap: 0
+  # Interdit certains types de dégâts (EntityDamageEvent.DamageCause).
+  blocked-causes:
+    - VOID
+    - FIRE_TICK
+    - SUFFOCATION
+    - DROWNING
+    - LAVA
+  # Autorise / interdit certains outils (matériaux). Vide = tout autorisé.
+  allowed-materials: [ ]
+  denied-materials: [ ]
+  # Cooldown minimum entre 2 hits d'un même joueur (millisecondes). 0 = off.
+  cooldown-ms: 0
+
+# --- Récompenses -------------------------------------------------------
+rewards:
+  # === Récompenses par hit ===
+  # Tirage à chaque fois qu'un joueur inflige un hit valide.
+  # weight = poids relatif; probabilité = weight / somme(weights)
+  # chance-per-hit = probabilité qu'une reward tombe sur ce hit
+  hit:
+    chance-per-hit: 0.20
+    entries:
+      - name: "5 pièces"
+        weight: 60
+        actions:
+          - "console: eco give <player> 5"
+          - "message: <green>+5 pièces"
+          - "sound: ENTITY_EXPERIENCE_ORB_PICKUP,1.0,1.5"
+      - name: "Pomme"
+        weight: 30
+        actions:
+          - "give: minecraft:apple 3"
+      - name: "Pomme dorée"
+        weight: 9
+        actions:
+          - "give: minecraft:golden_apple 1"
+          - "broadcast: <gold><player></gold> <gray>a trouvé une pomme dorée !"
+      - name: "Pomme enchantée"
+        weight: 1
+        actions:
+          - "give: minecraft:enchanted_golden_apple 1"
+          - "broadcast: <#FFD86E><bold><player></bold></gold> <gray>a trouvé une <#FF6EC7>pomme enchantée</#FF6EC7> !"
+
+  # === Récompenses au top damager (à la mort) ===
+  # Chaque tier est attribué au N-ième meilleur damageur.
+  # Les rewards sont exécutées séquentiellement, pas de tirage aléatoire
+  # (utilise "hit" pour du random).
+  tiers:
+    - name: "1er"
+      min-rank: 1
+      max-rank: 1
+      min-damage: 25          # dégâts min. requis pour être éligible
+      actions:
+        - "console: give <player> diamond 5"
+        - "console: eco give <player> 500"
+        - "message: <#FFD86E>Bravo, tu es <bold>1er</bold> !"
+        - "title: <#FFD86E><bold>1er</bold>;<gray>+500 pièces & 5 diamants;20;60;20"
+        - "sound: UI_TOAST_CHALLENGE_COMPLETE,1.0,1.0"
+    - name: "2ème"
+      min-rank: 2
+      max-rank: 2
+      min-damage: 10
+      actions:
+        - "console: eco give <player> 250"
+        - "give: minecraft:diamond 2"
+    - name: "3ème"
+      min-rank: 3
+      max-rank: 3
+      min-damage: 5
+      actions:
+        - "console: eco give <player> 100"
+    - name: "Top 4-10"
+      min-rank: 4
+      max-rank: 10
+      min-damage: 1
+      actions:
+        - "console: eco give <player> 25"
+
+  # === Récompenses "participation" (tous ceux qui ont hit) ===
+  participation:
+    min-damage: 1
+    actions:
+      - "console: eco give <player> 10"
+      - "message: <gray>Merci pour ta participation !"
+
+# ---------------------------------------------------------------------
+#  Format des actions
+# ---------------------------------------------------------------------
+#  console: <cmd>                 -> exécute en console (placeholders OK)
+#  player: <cmd>                  -> exécute en tant que joueur
+#  op: <cmd>                      -> exécute joueur avec op temporaire
+#  message: <text>                -> message MiniMessage au joueur
+#  broadcast: <text>              -> broadcast global MiniMessage
+#  title: <title>;<sub>;<in>;<stay>;<out>
+#  actionbar: <text>
+#  sound: <SOUND>,<volume>,<pitch>
+#  give: <material> <amount>      -> item vanilla
+#  give-nexo: <nexo_id> <amount>  -> item Nexo (si Nexo installé)
+#  effect: <TYPE> <duration_s> <amplifier>
+#  wait: <ticks>                  -> délai avant l'action suivante
+# ---------------------------------------------------------------------

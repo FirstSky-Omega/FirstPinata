@@ -1,0 +1,100 @@
+# =====================================================================
+#                          PINATA - Configuration
+# ---------------------------------------------------------------------
+#  Documentation complète : voir pinatas/example.yml pour un template
+#  de piñata annoté.
+# =====================================================================
+
+# Langue utilisée pour les messages (fr / en). Correspond au fichier
+# messages_<lang>.yml. Par défaut fr.
+language: fr
+
+# Préfixe global appliqué à tous les messages plugin (MiniMessage).
+prefix: "<gradient:#FF6EC7:#FFD86E><bold>Piñata</bold></gradient> <dark_gray>»</dark_gray> "
+
+# Debug : log détaillé des ticks, spawn, reward.
+debug: false
+
+# =====================================================================
+#  Général
+# =====================================================================
+general:
+  # Autorise plusieurs piñatas simultanément (par monde, tous types confondus).
+  max-concurrent: 5
+
+  # Distance max (en blocs) à laquelle un joueur est considéré comme
+  # ayant "participé" au combat de la piñata (utilisé pour la portée
+  # des broadcasts locaux et le tracking des dégâts).
+  participation-radius: 60
+
+  # Temps (en secondes) avant despawn automatique si aucun dégât n'est
+  # infligé. 0 = jamais.
+  idle-despawn: 120
+
+  # Fuseau horaire utilisé pour les schedules "fixed-times".
+  # "system" = fuseau de la machine (souvent UTC sur un serveur !)
+  # Sinon un ID Java valide : Europe/Paris, Europe/London, America/New_York,
+  # UTC, GMT+1, etc. Voir : https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  timezone: Europe/Paris
+
+# =====================================================================
+#  MythicMobs
+# =====================================================================
+mythicmobs:
+  # Si false, désactive complètement l'intégration MythicMobs même si
+  # MythicMobs est installé.
+  enabled: true
+
+  # Par défaut, si un piñata utilise un MythicMob avec ses propres skills,
+  # faut-il les laisser tourner (true) ou les désactiver (false) ?
+  # Peut être overridé par pinata (keep-mythic-skills).
+  keep-skills-by-default: true
+
+  # Si true, les dégâts infligés par les skills du mob ne sont pas
+  # comptabilisés dans le classement des top damagers.
+  ignore-skill-damage: true
+
+# =====================================================================
+#  Nexo (intégration items)
+# =====================================================================
+nexo:
+  enabled: true
+
+# =====================================================================
+#  ModelEngine (MEG) - modèles 3D
+# =====================================================================
+modelengine:
+  enabled: true
+  # Si true, quand un piñata a un model MEG et que le mob de base est
+  # visible, on masque le mob (invisibilité + no-name) pour ne voir que
+  # le model.
+  hide-base-mob: true
+
+# =====================================================================
+#  PlaceholderAPI (PAPI)
+# =====================================================================
+placeholderapi:
+  enabled: true
+  # Enregistre l'expansion "pinata" (%pinata_active%, %pinata_top%, etc.)
+  register-expansion: true
+
+# =====================================================================
+#  Rewards - defaults globaux (overrideables par piñata)
+# =====================================================================
+rewards:
+  # Message envoyé au joueur qui gagne une reward "hit".
+  hit-message-enabled: true
+  # Message envoyé à tout le monde quand un tier top-damager est gagné.
+  tier-broadcast-enabled: true
+  # Si true, les rewards "hit" sont exécutées en async (commandes non-touchant
+  # au monde). Recommandé sur Folia pour l'eco-plugin, etc.
+  async-command-execution: false
+
+# =====================================================================
+#  Storage (stats leaderboard, historique)
+# =====================================================================
+storage:
+  # Type : yaml, sqlite (à venir), none
+  type: yaml
+  # Nombre max d'entrées par joueur dans l'historique.
+  history-per-player: 50
