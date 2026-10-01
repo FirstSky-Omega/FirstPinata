@@ -21,6 +21,7 @@ public class PinataManager {
     private final PinataPlugin plugin;
     private final Map<UUID, PinataInstance> byEntity = new ConcurrentHashMap<>();
     private final Map<UUID, PinataInstance> byId = new ConcurrentHashMap<>();
+    private final Map<String, PinataInstance> lastByType = new ConcurrentHashMap<>();
 
     public PinataManager(PinataPlugin plugin) {
         this.plugin = plugin;
@@ -76,6 +77,7 @@ public class PinataManager {
 
     public PinataInstance byEntity(UUID entityId) { return byEntity.get(entityId); }
     public PinataInstance byId(UUID id) { return byId.get(id); }
+    public PinataInstance lastByType(String typeId) { return lastByType.get(typeId.toLowerCase(java.util.Locale.ROOT)); }
 
     public boolean isPinata(org.bukkit.entity.Entity entity) {
         if (entity == null) return false;
@@ -104,19 +106,18 @@ public class PinataManager {
         byId.put(instance.id(), instance);
         byEntity.put(entity.getUniqueId(), instance);
 
+        // Nettoyer l'ancienne bossbar du même type si elle traîne
+        PinataInstance prev = lastByType.get(type.id().toLowerCase(Locale.ROOT));
+        if (prev != null && prev.bossBar() != null) {
+            hideBossBar(prev);
+            prev.setBossBar(null);
+        }
+
         // Boss bar
         if (type.bossBar().enabled()) {
             BossBar bar = BossBar.bossBar(renderBossBarTitle(type, entity),
                     1.0f, mapColor(type.bossBar().color()), mapStyle(type.bossBar().style()));
-            for (org.bukkit.boss.BarFlag f : type.bossBar().flags()) {
-                switch (f) {
-                    case CREATE_FOG      -> bar.addFlag(BossBar.Flag.CREATE_WORLD_FOG);
-                    case DARKEN_SKY      -> bar.addFlag(BossBar.Flag.DARKEN_SCREEN);
-                    case PLAY_BOSS_MUSIC -> bar.addFlag(BossBar.Flag.PLAY_BOSS_MUSIC);
-                }
-            }
             instance.setBossBar(bar);
-            // audience initial : joueurs à portée
             updateBossBarAudience(instance);
         }
 
@@ -167,15 +168,14 @@ public class PinataManager {
             entity.setSilent(type.mob().silent());
             entity.setPersistent(true);
             entity.setRemoveWhenFarAway(false);
+            entity.addScoreboardTag("nostackall");
             entity.setGravity(type.mob().gravity());
 
             if (entity.getAttribute(Attribute.MAX_HEALTH) != null) {
                 entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(type.maxHealth());
                 entity.setHealth(type.maxHealth());
             }
-            if (type.mob().noDamageTicks() > 0) {
-                entity.setMaximumNoDamageTicks(type.mob().noDamageTicks());
-            }
+            entity.setMaximumNoDamageTicks(type.mob().noDamageTicks());
             if (!type.mob().ai()) {
                 entity.setAI(false);
             }
@@ -208,16 +208,12 @@ public class PinataManager {
         Location loc = instance.entity().getLocation();
         int radius = instance.type().bossBar().radius();
         double r2 = radius * radius;
-        Set<UUID> toShow = new HashSet<>();
         for (Player p : loc.getWorld().getPlayers()) {
             if (p.getLocation().distanceSquared(loc) <= r2) {
-                toShow.add(p.getUniqueId());
+                p.showBossBar(instance.bossBar());
+            } else {
+                p.hideBossBar(instance.bossBar());
             }
-        }
-        // add
-        for (UUID uid : toShow) {
-            Player p = Bukkit.getPlayer(uid);
-            if (p != null) p.showBossBar(instance.bossBar());
         }
     }
 
@@ -304,6 +300,8 @@ public class PinataManager {
 
     public void despawn(PinataInstance instance, String reason) {
         if (instance == null || instance.isRemoved()) return;
+        lastByType.put(instance.type().id().toLowerCase(java.util.Locale.ROOT), instance);
+        plugin.cumulativeStats().merge(instance);
         instance.markRemoved();
         byId.remove(instance.id());
         if (instance.entity() != null) byEntity.remove(instance.entity().getUniqueId());
@@ -312,6 +310,8 @@ public class PinataManager {
 
         LivingEntity ent = instance.entity();
         if (ent != null) {
+            try { ent.setPersistent(false); } catch (Throwable ignored) { }
+
             if (plugin.modelEngine().isPresent() && instance.type().mob().megModel() != null) {
                 plugin.scheduler().runFor(ent, () -> plugin.modelEngine().removeModel(ent), () -> { });
             }

@@ -8,6 +8,7 @@ import fr.luc.pinata.integration.ModelEngineIntegration;
 import fr.luc.pinata.integration.MythicMobsIntegration;
 import fr.luc.pinata.integration.NexoIntegration;
 import fr.luc.pinata.integration.PapiIntegration;
+import fr.luc.pinata.listener.ChunkCleanupListener;
 import fr.luc.pinata.listener.DamageListener;
 import fr.luc.pinata.listener.DeathListener;
 import fr.luc.pinata.listener.MythicListener;
@@ -15,6 +16,7 @@ import fr.luc.pinata.pinata.PinataManager;
 import fr.luc.pinata.reward.RewardManager;
 import fr.luc.pinata.schedule.ScheduleManager;
 import fr.luc.pinata.scheduler.SchedulerAdapter;
+import fr.luc.pinata.stats.CumulativeStats;
 import fr.luc.pinata.zone.ZoneManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -32,6 +34,8 @@ public class PinataPlugin extends JavaPlugin {
     private ScheduleManager scheduleManager;
     private PinataManager pinataManager;
     private RewardManager rewardManager;
+
+    private CumulativeStats cumulativeStats;
 
     private MythicMobsIntegration mythicIntegration;
     private NexoIntegration nexoIntegration;
@@ -65,6 +69,8 @@ public class PinataPlugin extends JavaPlugin {
         this.zoneManager = new ZoneManager(this);
         this.rewardManager = new RewardManager(this);
         this.pinataManager = new PinataManager(this);
+        this.cumulativeStats = new CumulativeStats(this);
+        this.cumulativeStats.load();
         this.scheduleManager = new ScheduleManager(this);
 
         reloadAll();
@@ -72,6 +78,7 @@ public class PinataPlugin extends JavaPlugin {
         // Listeners
         Bukkit.getPluginManager().registerEvents(new DamageListener(this), this);
         Bukkit.getPluginManager().registerEvents(new DeathListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ChunkCleanupListener(this), this);
         if (mythicIntegration.isPresent()) {
             Bukkit.getPluginManager().registerEvents(new MythicListener(this), this);
         }
@@ -93,6 +100,7 @@ public class PinataPlugin extends JavaPlugin {
     public void onDisable() {
         if (scheduleManager != null) scheduleManager.stop();
         if (pinataManager != null) pinataManager.despawnAll("plugin-shutdown");
+        if (cumulativeStats != null) cumulativeStats.save();
         if (papiIntegration != null) papiIntegration.unregister();
         if (schedulerAdapter != null) schedulerAdapter.cancelAll();
     }
@@ -121,6 +129,7 @@ public class PinataPlugin extends JavaPlugin {
     public NexoIntegration nexo() { return nexoIntegration; }
     public ModelEngineIntegration modelEngine() { return modelEngineIntegration; }
     public PapiIntegration papi() { return papiIntegration; }
+    public CumulativeStats cumulativeStats() { return cumulativeStats; }
 
     public void debug(String msg) {
         if (configManager != null && configManager.debug()) {

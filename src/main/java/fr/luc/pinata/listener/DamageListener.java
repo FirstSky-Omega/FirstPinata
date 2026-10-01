@@ -78,30 +78,22 @@ public class DamageListener implements Listener {
             return;
         }
 
-        // Apply damage rules
-        double damage = e.getFinalDamage() * rules.multiplier();
-        if (rules.perHitCap() > 0) damage = Math.min(damage, rules.perHitCap());
-
-        double currentTotal = instance.damageTracker().get(uid);
-        if (rules.perPlayerCap() > 0) {
-            double remainingBudget = rules.perPlayerCap() - currentTotal;
-            if (remainingBudget <= 0) {
-                e.setCancelled(true);
-                return;
-            }
-            damage = Math.min(damage, remainingBudget);
+        // Hit-count system: each valid hit = 1 HP
+        double currentHits = instance.damageTracker().get(uid);
+        if (rules.perPlayerCap() > 0 && currentHits >= rules.perPlayerCap()) {
+            e.setCancelled(true);
+            return;
         }
 
-        e.setDamage(damage);
+        e.setDamage(1.0);
+        le.setNoDamageTicks(0);
 
-        // Track
-        double newTotal = instance.damageTracker().add(uid, damage);
+        double newTotal = instance.damageTracker().add(uid, 1.0);
 
-        // Message perso
-        double hpAfter = Math.max(0, le.getHealth() - damage);
+        double hpAfter = Math.max(0, le.getHealth() - 1.0);
         plugin.messages().send(attacker, "hit-personal", MessageUtil.placeholders()
                 .set("pinata", instance.type().displayName())
-                .set("damage", (int) damage)
+                .set("damage", 1)
                 .set("hp", (int) hpAfter)
                 .set("max_hp", (int) instance.maxHealth())
                 .build());
@@ -116,7 +108,7 @@ public class DamageListener implements Listener {
         }
 
         // Rewards par hit
-        plugin.rewardManager().onHit(instance, attacker, damage, newTotal);
+        plugin.rewardManager().onHit(instance, attacker, 1.0, newTotal);
     }
 
     private Player resolvePlayer(EntityDamageByEntityEvent e) {
