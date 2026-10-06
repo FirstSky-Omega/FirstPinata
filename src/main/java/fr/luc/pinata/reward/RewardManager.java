@@ -95,6 +95,26 @@ public class RewardManager {
                 executor.execute(table.participationActions(), p, instance, ph);
             }
         }
+
+        // Commandes de fin configurées dans le fichier du type de piñata
+        List<String> endCmds = instance.type().endCommands();
+        if (!endCmds.isEmpty()) {
+            List<String> winners = new ArrayList<>();
+            for (int i = 0; i < Math.min(3, ranking.size()); i++) {
+                UUID uid = ranking.get(i).getKey();
+                Player pw = Bukkit.getPlayer(uid);
+                String name = pw != null ? pw.getName() : String.valueOf(Bukkit.getOfflinePlayer(uid).getName());
+                winners.add(name != null ? name : "?");
+            }
+            for (String cmd : endCmds) {
+                String resolved = cmd;
+                for (int i = 0; i < winners.size(); i++) {
+                    resolved = resolved.replace("{" + (i + 1) + "}", winners.get(i));
+                }
+                resolved = resolved.replaceAll("\\{\\d+}", "?");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+            }
+        }
     }
 
     private Reward pickWeighted(List<Reward> rewards) {

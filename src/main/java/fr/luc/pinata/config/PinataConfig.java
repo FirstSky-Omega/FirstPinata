@@ -89,8 +89,11 @@ public class PinataConfig {
         // ---- Rewards
         RewardTable rewards = parseRewards(cfg.getConfigurationSection("rewards"));
 
+        // ---- End commands
+        List<String> endCommands = cfg.getStringList("end-commands");
+
         return new PinataType(id, displayName, mob, mmOverride, maxHealth, bossBar,
-                lifetime, spawn, hit, death, dmg, rewards);
+                lifetime, spawn, hit, death, dmg, rewards, endCommands);
     }
 
     private Mob parseMob(ConfigurationSection sec) {
