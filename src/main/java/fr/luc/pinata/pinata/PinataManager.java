@@ -136,6 +136,15 @@ public class PinataManager {
         // Effet spawn
         playEffect(type.spawnEffect(), loc, instance, null);
 
+        // Start commands
+        List<String> startCmds = type.startCommands();
+        if (!startCmds.isEmpty()) {
+            for (String cmd : startCmds) {
+                try { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd); }
+                catch (Throwable t) { plugin.getLogger().warning("start-command échouée : '" + cmd + "' - " + t.getMessage()); }
+            }
+        }
+
         // Lifetime scheduler
         scheduleLifetime(instance);
 

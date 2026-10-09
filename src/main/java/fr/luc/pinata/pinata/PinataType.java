@@ -93,12 +93,13 @@ public final class PinataType {
     private final Effect deathEffect;
     private final DamageRules damageRules;
     private final RewardTable rewards;
+    private final List<String> startCommands;
     private final List<String> endCommands;
 
     public PinataType(String id, String displayName, Mob mob, MythicOverride mythicOverride,
                       double maxHealth, BossBar bossBar, Lifetime lifetime,
                       Effect spawnEffect, Effect hitEffect, Effect deathEffect,
-                      DamageRules damageRules, RewardTable rewards, List<String> endCommands) {
+                      DamageRules damageRules, RewardTable rewards, List<String> startCommands, List<String> endCommands) {
         this.id = id;
         this.displayName = displayName;
         this.mob = mob;
@@ -111,6 +112,7 @@ public final class PinataType {
         this.deathEffect = deathEffect;
         this.damageRules = damageRules;
         this.rewards = rewards;
+        this.startCommands = startCommands != null ? List.copyOf(startCommands) : List.of();
         this.endCommands = endCommands != null ? List.copyOf(endCommands) : List.of();
     }
 
@@ -126,5 +128,6 @@ public final class PinataType {
     public Effect deathEffect() { return deathEffect; }
     public DamageRules damageRules() { return damageRules; }
     public RewardTable rewards() { return rewards; }
+    public List<String> startCommands() { return startCommands; }
     public List<String> endCommands() { return endCommands; }
 }
