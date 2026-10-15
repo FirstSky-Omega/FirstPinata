@@ -49,12 +49,11 @@
     </repositories>
 
     <dependencies>
-        <!-- Folia API (Paper compatible) - MC 1.26.2 beta 7 -->
-        <!-- Alternatives : 26.1.2.build.8-stable (stable) - voir repo.papermc.io -->
+        <!-- Folia API (Paper compatible) - MC 1.26.1 stable -->
         <dependency>
             <groupId>dev.folia</groupId>
             <artifactId>folia-api</artifactId>
-            <version>26.2.build.7-beta</version>
+            <version>26.1.2.build.8-stable</version>
             <scope>provided</scope>
         </dependency>
 
