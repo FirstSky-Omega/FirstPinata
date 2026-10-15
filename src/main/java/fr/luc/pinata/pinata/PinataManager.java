@@ -136,13 +136,15 @@ public class PinataManager {
         // Effet spawn
         playEffect(type.spawnEffect(), loc, instance, null);
 
-        // Start commands
+        // Start commands — global scheduler requis sur Folia
         List<String> startCmds = type.startCommands();
         if (!startCmds.isEmpty()) {
-            for (String cmd : startCmds) {
-                try { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd); }
-                catch (Throwable t) { plugin.getLogger().warning("start-command échouée : '" + cmd + "' - " + t.getMessage()); }
-            }
+            plugin.scheduler().global(() -> {
+                for (String cmd : startCmds) {
+                    try { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd); }
+                    catch (Throwable t) { plugin.getLogger().warning("start-command échouée : '" + cmd + "' - " + t.getMessage()); }
+                }
+            });
         }
 
         // Lifetime scheduler
@@ -279,6 +281,17 @@ public class PinataManager {
         playEffect(instance.type().deathEffect(), instance.entity().getLocation(), instance, null);
     }
 
+    private List<String> resolveTopNames(PinataInstance instance, int count) {
+        List<Map.Entry<UUID, Double>> ranking = instance.damageTracker().ranking();
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < Math.min(count, ranking.size()); i++) {
+            String name = Bukkit.getOfflinePlayer(ranking.get(i).getKey()).getName();
+            names.add(name != null ? name : "?");
+        }
+        while (names.size() < count) names.add("-");
+        return names;
+    }
+
     private Map<String, String> buildEffectPlaceholders(PinataInstance i) {
         Location loc = i.entity() != null ? i.entity().getLocation() : i.spawnLocation();
         UUID top = i.damageTracker().topDamager();
@@ -328,6 +341,24 @@ public class PinataManager {
                 plugin.scheduler().runFor(ent, ent::remove, () -> { });
             }
         }
+        // End commands — global scheduler requis sur Folia, skip au shutdown
+        List<String> endCmds = instance.type().endCommands();
+        if (!endCmds.isEmpty() && !"plugin-shutdown".equals(reason)) {
+            List<String> top3 = resolveTopNames(instance, 3);
+            plugin.scheduler().global(() -> {
+                for (String raw : endCmds) {
+                    String cmd = raw;
+                    for (int i = 0; i < top3.size(); i++) {
+                        cmd = cmd.replace("{" + (i + 1) + "}", top3.get(i));
+                    }
+                    cmd = cmd.replaceAll("\\{\\d+}", "-");
+                    final String finalCmd = cmd;
+                    try { Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCmd); }
+                    catch (Throwable t) { plugin.getLogger().warning("end-command échouée : '" + raw + "' - " + t.getMessage()); }
+                }
+            });
+        }
+
         plugin.debug("Despawned " + instance.type().id() + " (" + reason + ")");
     }
 
